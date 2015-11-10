@@ -6,3 +6,4 @@ Useful resources
 >https://www.cs.hmc.edu/~keller/courses/cs60/slides/18.30.html
 >http://cs.union.edu/~striegnk/courses/esslli04prolog/practical.day2.php?s=practical.day2.node2
 >http://www.learnprolognow.org/
+>http://stackoverflow.com/questions/12030515/prolog-recursive-call/12030940#12030940
