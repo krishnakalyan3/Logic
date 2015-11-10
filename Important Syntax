@@ -1,0 +1,7 @@
+Important Syntax
+
+Set WD
+working_directory(CWD, '/Users/krishna/Dropbox/DMKM/Course/Logic and Knowledge Representation/Prolog_Code').
+
+Show WD
+working_directory(CWD, CWD).
