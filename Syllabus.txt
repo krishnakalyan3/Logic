@@ -1,0 +1,14 @@
+Syllabus - 13/Nov/15
+Logic course
+Introduction to automatic Theorem Proving
+Resolution rule in Propositional Logic
+Grounded Resolution (i.e. Resolution rule for Grounded clauses)
+Unification and Pattern Matching
+General resolution in First Order Logic
+Prolog course
+Programming Graphs in PROLOG
+Numbers in Prolog
+Dynamic Programming
+Logic exercises
+Predicate calculus: interpretation and modeling
+Predicate calculus: prenex form, skolemisation

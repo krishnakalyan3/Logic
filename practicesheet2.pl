@@ -49,6 +49,21 @@ remove(X,Y,[H1|Z]):-
 	Y \= H1,
 	remove(T1,Y,Z).
 
+% Definite Clause Grammars 
+reverse1([])     --> [].
+reverse1([L|Ls]) --> reverse(Ls), [L].
+
+% http://www.learnprolognow.org/lpnpage.php?pagetype=html&pageid=lpn-htmlse25
+% Simple Reverse
+reverse2([],[]). 
+   reverse2([H|T],R):-  reverse2(T,RevT),  
+   append(RevT,[H],R).
+
+% Reverse with accumulator
+reverse3([],Z,Z).
+reverse3([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
+
+
 
 
 
