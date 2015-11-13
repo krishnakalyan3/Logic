@@ -63,6 +63,17 @@ reverse2([],[]).
 reverse3([],Z,Z).
 reverse3([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
 
+% List Filter
+
+
+% palindrome
+pal([]).
+pal([_]).
+pal(Pal) :-
+    append([H|T], [H], Pal),
+    pal(T).
+        
+
 
 
 
