@@ -53,6 +53,7 @@ remove(X,Y,[H1|Z]):-
 reverse1([])     --> [].
 reverse1([L|Ls]) --> reverse(Ls), [L].
 
+% TODO : Reverse
 % http://www.learnprolognow.org/lpnpage.php?pagetype=html&pageid=lpn-htmlse25
 % Simple Reverse
 reverse2([],[]). 
@@ -64,15 +65,46 @@ reverse3([],Z,Z).
 reverse3([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
 
 % List Filter
-
+deleteSome(X, [], X).
+deleteSome(X, [Y|Ys], Z) :-
+    deleteOne(Y, X, T),
+    deleteSome(T, Ys, Z).
 
 % palindrome
 pal([]).
 pal([_]).
-pal(Pal) :-
-    append([H|T], [H], Pal),
-    pal(T).
+pal(X) :-
+	X = [H|T],
+	append(L1,[H],R), pal(L1).
+
         
+% Nested List I
+% Write a predicate longestList/2 such that longestList(L1,L2) is satisfied if L2 is the longest
+% nested list from the list of lists L1.
+
+
+% This one is wrong as it just returns the longest number
+% long([[1],[1,2],[1,2,3],[1,2,3,4]],LI).
+length2([],0).
+length2(A,X):-
+	A = [_|L],
+	length2(L,Y),
+	X is Y + 1.
+
+ll([],X,X).
+ll([H|L],X,M):-
+	length2(H,S1),
+	length2(M,S2),
+	S1>S2,!,
+	ll(L,X,H).	
+
+ll([H|L],X,M):-
+	ll(L,X,M).
+
+long(L, M) :-
+	ll(L,M,[]).
+
+
 
 
 
