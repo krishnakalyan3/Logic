@@ -1,7 +1,6 @@
 % Eg1
 conscientious(pascal).
 conscientious(zoe).
-
 study(X):-serious(X).
 homework(X):-conscientious(X).
 serious(X):-homework(X).
