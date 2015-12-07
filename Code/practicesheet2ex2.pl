@@ -1,4 +1,4 @@
-% working_directory(CWD, '/Users/saulgarcia/Dropbox/Maestria/DMKM/Courses/SEM1/Logic')
+% working_directory(CWD, '/Users/krishna/Dropbox/DMKM/Course/Logic and Knowledge Representation/Prolog_Code/Code')
 
 elem(X, [X | ]).
 elem(X, [Y | L]) :- elem(X,L).
