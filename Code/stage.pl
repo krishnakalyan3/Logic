@@ -1,3 +1,20 @@
+onecount(X,Y):-
+	rowI(M,)
+	Z is X - 1,
+	onecount(T,Z),
+
+traceMatrix(X,Z):-
+	traceMatrix1(X,0,Z).
+
+traceMatrix1([],[_],[]).
+traceMatrix1(X,NewCount,[K|Z]):-
+    X = [H|T],
+    rowI(H,Count,K),
+    NewCount is Count +1,
+    traceMatrix1(T,NewCount,Z).
+
+
+
 % Ex 5.
 % size([[1,2],[3,4],[5,6]], NbRows, NbCols).
 
@@ -39,3 +56,27 @@ traceMatrix(M,Z):-
 	len1(M,Z1),
 	M = [H|T],
 	traceMatrix(T,)
+
+
+traceMatrix(X,Y):-
+	len1(X,Z),traceMatrix1(X,Z,Y).
+
+traceMatrix1([],Count,[]).
+traceMatrix1(X,0,[K|Z]):-
+	X = [H|T],
+	NewCount is Count - 1,
+	rowI(H,NewCount,K),
+	traceMatrix1(T,Z).
+
+
+identity(0,[[]]).
+identity(1,[[1]]).
+identity(X, R):- identity(X,R,1).
+identity(X, [H|T],C):-
+    X\=C,
+    !,
+    ones(X,C,H),
+    C2 is C + 1,
+    identity(X, T ,C2).
+identity(X, [H],C):-
+    ones(X,C,H).
