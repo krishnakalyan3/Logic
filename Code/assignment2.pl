@@ -6,6 +6,9 @@
 % Ex 5.
 % Question 1
 % size([[1,2],[3,4],[5,6]], NbRows, NbCols).
+% the length predicate returns the length of the list.
+% valid predicate check if all lists have the same length.
+% size predicate returns the length of rows and columns unfying with length and valid predicate.
 len1(A,X):-
 	len1(A,0,X).
 len1([],L,L).
@@ -24,6 +27,7 @@ size([H|T],Y,Z):-
 
 % Question 2
 % rowI([[1,2],[3,4],[5,6]], 2, RI).
+% 
 rowI([H|_],1,H):-!.
 rowI([_|T],I,X) :-
    I1 is I-1,
@@ -31,6 +35,8 @@ rowI([_|T],I,X) :-
 
 % Question 3
 % columnJ([[1,2],[3,4],[5,6]], 1, CJ).
+% base case deals with an empty list and returns empty list.
+% Head of all rowI  with the elemnt postion will return a column. 
 columnJ([],_,[]).
 columnJ(X,I,[Z|K]):-
 	X = [H|T],
@@ -38,6 +44,7 @@ columnJ(X,I,[Z|K]):-
 	columnJ(T,I,K).
 
 % elm([[1,2],[3,4],[5,6]], 1,1, Z).
+% unification of rowI and columnJ returns the required element from the list.
 elm(A,X,Y,Z):-
 	rowI(A,X,K),columnJ(K,Y,Z).
 
@@ -89,6 +96,7 @@ repl(X, N, L) :-
 
 % Question 5
 % traceMatrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]],R).
+% 
 sum_list1([], 0).
 sum_list1([H|T], Sum) :-
    sum_list1(T, Rest),
@@ -98,8 +106,11 @@ traceMatrix(X, Y):- diagonal(X,R,1),sum_list1(R,Y).
 
 % Question 6
 % diagonal([[1, 2, 3], [4, 5, 6], [7, 8, 9]],D).
-diagonal(X,Y):- diagonal(X,Y,1).
+% The base case incudes an accumulator startting from one with input X and output Y
+% Another base case when the list is empty
+% use rowI to get the diagonal elements of a list 
 diagonal([],[],_).
+diagonal(X,Y):- diagonal(X,Y,1).
 diagonal(X,[R|Z],C):-
    X=[H|T],
    rowI(H,C,R),
@@ -108,11 +119,12 @@ diagonal(X,[R|Z],C):-
 
 % Question 7
 % identity(3,I).
-% ones has arity 3 basically generates list
-% X -> List i want x elemnts
+% The base case returns an empty list if the input element is 0.
+% the identity predicate check for conditions X and C are not equal and calls the predicate ones and increment accumulator C2. 
+% ones has arity 3 basically generates list based on condition when 
+% X -> List with x elemnts
 % Y -> postions of 1
 % L is the list returned with 1s.
-% ones(3,1,L).
 identity(0,[[]]).
 identity(1,[1]).
 identity(X,Y):-
@@ -121,7 +133,6 @@ identity(X,Y):-
 identity(X,Y,C):-
 	Y = [H|T],
 	X \= C,
-	!,
 	ones(X,C,H),
 	C2 is C +1,
 	identity(X,T,C2).
@@ -129,6 +140,12 @@ identity(X,Y,C):-
 identity(X,[Y],C):-
 	ones(X,C,Y).
 
+% ones(3,1,L).
+% ones predicate has arity 3 which take input number of elements , postion of 1 and output and accumulator 1.
+% Condition 1 append 0 if X and Y are not equal to C + incerment the accumulator
+% Condition 2 append 1 if Y and C are equal + X and C are not the same.
+% Condition 3 output element 0 if X and C are equal + Y is not equal to C.
+% Condition 4 output element 1 if X and C are equal + Y and C are equal
 ones(X,Y,Z) :- ones(X,Y,Z,1).
 ones(X,Y,Z,C):-
 	Z = [0|K],
@@ -155,11 +172,11 @@ ones(X,Y,Z,C):-
 	Y = C.
 
 
-
-
 % Ex 6. 
 % Question 1
 % listFirst([[1,2,8],[3,4],[5,6]],LF).
+% base case of this predicate returns an empty list once the input is empty.
+% listFirst predicate return the head of every list and ignores the rest.
 listFirst([],[]).
 listFirst([H1|T1],[H2|Z]):-
 	H1 = [H2|_],
@@ -167,6 +184,8 @@ listFirst([H1|T1],[H2|Z]):-
 
 % Question 2
 % listFollowers([[1,2,8],[3,4],[5,6]],LF).
+% The base case will return an empty list incase the input empty.
+% Since we are only interested in the tail of the list we implement a predicate called listFollowers that ignores the head.
 listFollowers([],[]).
 listFollowers([H1|T1],[T2|Z]):-
 	H1 = [_|T2],
@@ -174,12 +193,17 @@ listFollowers([H1|T1],[T2|Z]):-
 
 % Question 3
 % decompose([[1,2,8],[3,4,5],[5,6,6]], L1, L2).
+% Maplist is a predcicate that takes in a function called list_head_tail.
+% Predicate list_head_tail returns the head and tail of a list
+% decompose predicate returns the first head of every list as L1 and Tail of every list as L2 based on the maplist. 
 list_head_tail([H|T], H, T).
 decompose(X, L1, L2) :-
    maplist(list_head_tail, X, L1, L2).
 
 % Question 4
 % trans([[1,2],[3,4],[5,6]], R).
+% The base case makes sure that an empty list returns and empty list and terminates 
+% Transpose predicate is decompose predicate. Decompose returns head and tail. Head appends to the output and tail recurses.
 transpose([[]|_], []).
 transpose(X,[L1|R]):-
     decompose(X,L1,L2),
