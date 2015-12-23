@@ -1,9 +1,8 @@
 % Assignment 2
 % Sai Krishna Kalyan
 
-% working_directory(CWD, '/Users/krishna/Dropbox/DMKM/Course/Logic and Knowledge Representation/Prolog_Code/Code').
+% ========= Ex 5 =========
 
-% Ex 5.
 % Question 1
 % size([[1,2],[3,4],[5,6]], NbRows, NbCols).
 % the length predicate returns the length of the list.
@@ -27,7 +26,7 @@ size([H|T],Y,Z):-
 
 % Question 2
 % rowI([[1,2],[3,4],[5,6]], 2, RI).
-% 
+% base case returns the value 1 if the 
 rowI([H|_],1,H):-!.
 rowI([_|T],I,X) :-
    I1 is I-1,
@@ -36,24 +35,21 @@ rowI([_|T],I,X) :-
 % Question 3
 % columnJ([[1,2],[3,4],[5,6]], 1, CJ).
 % base case deals with an empty list and returns empty list.
-% Head of all rowI  with the elemnt postion will return a column. 
+% Head of all Lists in predicate rowI with postion will return a column. 
 columnJ([],_,[]).
 columnJ(X,I,[Z|K]):-
 	X = [H|T],
 	rowI(H,I,Z),
 	columnJ(T,I,K).
 
-% elm([[1,2],[3,4],[5,6]], 1,1, Z).
-% unification of rowI and columnJ returns the required element from the list.
-elm(A,X,Y,Z):-
-	rowI(A,X,K),columnJ(K,Y,Z).
-
 % Question 4
 % product([[1,2],[3,4],[5,6]], [[1,1,1],[1,1,1]], M).
+% Base case returns an empty list when given an empty list.
+% the predicate product is a unification of transpose predicate defined below , mult2 and product
 product([],_,[]).
 product(X,Y,[Z1|Z]):- 
 	X = [H|T],
-	trans(Y,Z2),
+	transpose(Y,Z2),
 	mult2(H,Z2,Z1),
 	product(T,Y,Z).
 
@@ -96,21 +92,22 @@ repl(X, N, L) :-
 
 % Question 5
 % traceMatrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]],R).
-% 
+% The predicate traceMatrix is a unification of predicates diagonal and sum_list1.
+% sum_list1 is a predicate that adds a list
 sum_list1([], 0).
 sum_list1([H|T], Sum) :-
    sum_list1(T, Rest),
    Sum is H + Rest.
 
-traceMatrix(X, Y):- diagonal(X,R,1),sum_list1(R,Y).
+traceMatrix(X, Y):- diagonal(X,R),sum_list1(R,Y).
 
 % Question 6
 % diagonal([[1, 2, 3], [4, 5, 6], [7, 8, 9]],D).
 % The base case incudes an accumulator startting from one with input X and output Y
 % Another base case when the list is empty
 % use rowI to get the diagonal elements of a list 
-diagonal([],[],_).
 diagonal(X,Y):- diagonal(X,Y,1).
+diagonal([],[],_).
 diagonal(X,[R|Z],C):-
    X=[H|T],
    rowI(H,C,R),
@@ -171,8 +168,8 @@ ones(X,Y,Z,C):-
 	X = C,
 	Y = C.
 
+% ========= Ex 6 =========
 
-% Ex 6. 
 % Question 1
 % listFirst([[1,2,8],[3,4],[5,6]],LF).
 % base case of this predicate returns an empty list once the input is empty.
