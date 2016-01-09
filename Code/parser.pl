@@ -5,8 +5,13 @@ working_directory(_,
 % We check the follwing
 read_command(L1):-             
     get0(C),
-    read_command(_, L, C),name(X, L),atomic_list_concat([M1|T1],' ',X),
-    ([M1] == [cal]
+    read_command(_, L, C),name(X, L),atomic_list_concat([M1|T1],' ',X),last([M1|T1],Z1),name(Z1,[Z1|Z2|Z3]),
+    (
+    [Z1|Z2] = [63,63]
+    	->	;
+    [Z1] == [63]
+    	->	; 
+    [M1] == [cal]
   		->cmd_cal([M1|T1],L1);
   	[M1] == [cat]
   		->cmd_cat([M1|T1],L1);
@@ -22,6 +27,7 @@ read_command(_, [], X):-
 read_command(X, [C|L], C):-
 	get0(C1),
 	read_command(X, L, C1).
+
 
 
 % ======================================= %
@@ -102,7 +108,6 @@ cmd_grep([grep|T],Z):-
 	removehead(Z4,Z5),sub_member_grep(Z5,Z6),name(Z7,Z6),
 	Z = search_expr(Z7,[],[],[Z2|Z3] ).
 
-
 removehead([_|Tail], Tail).
 
 sub_member_grep([],[]).
@@ -110,6 +115,20 @@ sub_member_grep(X,[H|Y]):-
 	X = [H|T],
 	member(H,[98,99,105,104,108,110,118,115,121]),
 	sub_member_grep(T,Y).
+% ======================================= %
 
+
+% ======================================= %
+read_dcg(C):-
+	get0(Input),
+	read_dcg(C1,Input),
+	writeln(C1).
+
+read_dcg([],Input):-
+	member(Input,`\n\t`),
+	!.
+read_dcg([In|L],In):-
+	get0(In2),
+	read_dcg(L,In2).
 
 
