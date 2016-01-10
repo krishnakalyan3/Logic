@@ -1,4 +1,29 @@
-Test Case
+BNF Formailsm
+1. Express the syntax of the different commands.
+
+read operation
+<read_command> ::= cal <cal args> | cat <cat args> | cp <cp args> | grep <grep args>
+
+cal operatrions
+<cal args> ::= <month> <year> | <year> | ""
+<month> ::= <integer>[1-12]
+<year> ::= <interger>[1-9999]
+
+cat operations
+<cat args> ::= "-"<cat_option list> | <files>*
+<cat_option list> ::= n|b|s|u|v|e|t
+
+cp operations
+<cp args> ::= <cp_option list> | <files>* target
+<cp_option list> ::= -r| -R| -f| -i| -p
+
+grep options
+<grep args> ::= "-"<grep_option list> | <grep_option_expr> <files>*
+<grep_option list> ::= b|c|i|h|l|n|v|s|y
+<grep_option_expr> ::= "-e" expr
+
+
+Test Cases
 
 %%%%% Cal test Cases %%%%%
 ?- read_command(L).
@@ -64,6 +89,56 @@ L1 = search_expr(b, ['-e'], exp, [filen]) .
 ?- read_command(L1).
 |    grep -b
 false.
+
+%%%%% Send and Append Test cases %%%%%
+?- read_command(L1).
+|    cal >file1
+L1 = send(calendar(1, 2016), file1) .
+
+?- read_command(L1).
+|    cal >>file2
+L1 = append(calendar(1, 2016), file2) .
+
+?- read_command(L1).
+|    cal 1 2 >file1
+L1 = send(calendar(1, 2), file1) .
+
+?- read_command(L1).
+|    cal 1 2 >>file2
+L1 = append(calendar(1, 2), file2) .
+
+?- read_command(L1).
+|    cat -nb file1 file2 file3 >>file1
+L1 = append(concatenate(nb, [file1, file2, file3]), file1) .
+
+?- read_command(L1).
+|    cat -nb file1 file2 file3 >file2
+L1 = send(concatenate(nb, [file1, file2, file3]), file2) .
+
+?- read_command(L1).
+|    cp -r -R file1 file2 file3 target >file2
+L1 = send(copy([r, 'R'], [file1, file2, file3], target), file2) .
+
+?- read_command(L1).
+|    grep -bichln -e expr file1 file2 >>file1
+L1 = append(search_expr(bichln, ['-e'], expr, [file1, file2]), file1) .
+
+?- read_command(L1).
+|    grep -bichln -e expr file1 file2 >file2
+L1 = send(search_expr(bichln, ['-e'], expr, [file1, file2]), file2) .
+
+
+%%%%% DCG Test cases %%%%%
+
+%%%%% CP Test cases %%%%%
+
+?- read_dcg(R).
+|    cp -R -r -f file1 file2 target
+R = copy([r, r, f], [file1, file2], target).
+
+?- read_dcg(R).
+|    cp file1 file2 target
+R = copy([file1, file2], target).
 
 
 
