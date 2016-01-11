@@ -79,16 +79,20 @@ false.
 L1 = search_expr(bichln, ['-e'], expr, [file1, file2]) .
 
 ?- read_command(L1).
-|    grep -b file1 file2
-L1 = search_expr(b, [], [], [file1, file2]) .
+|: grep -b file1 file2
+L1 = search_exp([b], [], file1, [file2]).
 
 ?- read_command(L1).
-|    grep -b -e exp filen
-L1 = search_expr(b, ['-e'], exp, [filen]) .
+|: grep -b -e exp filen
+L1 = search_exp([b], [e], exp, [filen]).
 
 ?- read_command(L1).
 |    grep -b
 false.
+
+?- read_command(L1).
+|: grep file1 file2
+L1 = search_exp([], [], file1, [file2]).
 
 %%%%% Send and Append Test cases %%%%%
 ?- read_command(L1).
@@ -128,10 +132,31 @@ L1 = append(search_expr(bichln, ['-e'], expr, [file1, file2]), file1) .
 L1 = send(search_expr(bichln, ['-e'], expr, [file1, file2]), file2) .
 
 
-%%%%% DCG Test cases %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% DCG Test cases %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%% CAL Test cases %%%%%
+?- read_dcg(R).
+|: cal
+R = calendar(1, 2016).
+
+?- read_command(L1).
+|: cal 1 1989
+L1 = calendar(1, 1989).
+
+?- read_command(L1).
+|: cal 2016
+L1 = calendar(2016).
+
+%%%%% CAT Test cases %%%%%
+?- read_dcg(R).
+|: cat -nb file1 file2 file3 
+R = concatenate([n, b], [file1, file2, file3]) .
+
+?- read_dcg(R).
+|: cat file1 file2
+R = concatenate([], [file1, file2]) .
 
 %%%%% CP Test cases %%%%%
-
 ?- read_dcg(R).
 |    cp -R -r -f file1 file2 target
 R = copy([r, r, f], [file1, file2], target).
@@ -140,5 +165,21 @@ R = copy([r, r, f], [file1, file2], target).
 |    cp file1 file2 target
 R = copy([file1, file2], target).
 
+%%%%% GREP Test cases %%%%%
+?- read_dcg(R)
+|    .
+|    grep -bc -e expr file1 file2
+R = search_expr([b, c], e, expr, [file1, file2]).
 
+?- read_dcg(R).
+|    grep expr file1 file2
+R = search_expr([], [], expr, [file1, file2]).
 
+%%%%% Send Append Test cases %%%%%
+?- read_dcg(R).
+|    cal >file1 
+R = send(calendar(1, 2016), file1) .
+
+?- read_dcg(R).
+|    cal >>file2
+R = append(calendar(1, 2016), file2) .

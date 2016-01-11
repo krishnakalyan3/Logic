@@ -1,8 +1,7 @@
 working_directory(_, 
 	'/Users/krishna/Dropbox/DMKM/Course/Logic and Knowledge Representation/Prolog_Code/Code').
 
-% Conditional Checks
-% We check the follwing
+% Reading the characters and based on '>' or '>>' return the output required else return the ascii code
 read_command(L1):-             
     get0(C),
     read_command(_, L, C),name(X, L),atomic_list_concat([M1|T1],' ',X),last([M1|T1],Z1),name(Z1,[H1,H2|T]),
@@ -15,36 +14,38 @@ read_command(L1):-
     LO = L1
     ).
 
-list_butlast([X|Xs],Ys) :-                % use auxiliary predicate ...
-   list_butlast_prev(Xs,Ys,X).            % ... which lags behind by one item
+
+% Predicate to remove the last element in the List
+list_butlast([X|Xs],Ys) :-                
+   list_butlast_prev(Xs,Ys,X).            
 list_butlast_prev([],[],_).
 list_butlast_prev([X1|Xs],[X0|Ys],X0) :-  
-   list_butlast_prev(Xs,Ys,X1).           % lag behind by one
+   list_butlast_prev(Xs,Ys,X1).           
 
+% based on input List Conditional Decions are made
 default_sol(X,Y):-
-	cmd_cal(X,Y).
+	cmd_cal(X,Y),!.
 default_sol(X,Y):-
-	cmd_cat(X,Y).
+	cmd_cat(X,Y),!.
 default_sol(X,Y):-
-	cmd_cp(X,Y).
+	cmd_cp(X,Y),!.
+default_sol([_|T],Y):-
+	cmd_grep(T,Y),!.
 default_sol(X,Y):-
-	cmd_grep(X,Y).
-default_sol(X,Y):-
-	sub_element_cat(X,Y1),flatten(Y1,Y).
+	sub_element_cat(X,Y1),flatten(Y1,Y),!.
 
 read_command(_, [], X):-
 	member(X, `.\n\t`), !.
 read_command(X, [C|L], C):-
 	get0(C1),
 	read_command(X, L, C1).
-
 % ======================================= %
 
-% cmd_cal([cal],Y).
+% Wrapper Predicate to return the default Month and Year
 cmd_cal([cal],calendar( M , Y )):-
 	default_cal(M,Y).
 	
-
+% Cal predicate retuns user supplied Date after checking the range
 cmd_cal( [cal,(M),(Y)] , calendar( M1 , Y1 ) ):-
 	atom_number(M,M1),atom_number(Y,Y1),
   	integer(M1),
@@ -52,19 +53,21 @@ cmd_cal( [cal,(M),(Y)] , calendar( M1 , Y1 ) ):-
   	integer(Y1) ,
   	between(1,9999,Y1).
 
+% Predicate returns the Year after checking the range
 cmd_cal( [cal,(Y)] , calendar( Y1 ) ):-
    atom_number(Y,Y1),
    integer(Y1),
    between(1,9999,Y1).
 
+% Predicate to return the default date
 default_cal(M,Y):-
 	get_time(Stamp),
     stamp_date_time(Stamp, DateTime, local),
     date_time_value(month, DateTime, M),
     date_time_value(year, DateTime, Y).
-
 % ======================================= %
 
+% Cat predicate to return the output in the required format
 % cmd_cat([cat,'-nbsuvet',file1,file2],Y).
 cmd_cat([cat|T],Z):-
 	divide_dashed(T,Z1,Z2),sub_element_cat(Z1,Z3),flatten(Z3,[_|T1]),sub_member_cat(T1,Z4),name(Z5,Z4),
@@ -83,10 +86,9 @@ sub_member_cat(X,[H|Y]):-
 	X = [H|T],
 	member(H,[110,98,115,117,118,101,116]),
 	sub_member_cat(T,Y).
-
 % ======================================= %
 
-% cp [-r|-R] [-f] [-i] [-p] file1 [file2 …] target
+% Cmd predicate get the output in the required format.
 % cmd_cp([cp,'-r','-i','-p',file1,target],Z).
 cmd_cp([cp|T],Z):-
 	last(T,Z1),divide_dashed(T,Z2,Z3),append(WithoutLast, [_], Z3),len(WithoutLast) \= 1,sub_element(Z2,Y),
@@ -105,71 +107,86 @@ sub_element(X,[S|Y]):-
 divide_dashed(L, D, P) :-
     partition(dashed, L, D, P).
 dashed(S) :- atom_concat(-,_,S).
-
 % ======================================= %
 
-% cmd_grep([grep,'-bcihlnvsy','-e',expe,file1,file2],Y).
-% cmd_grep([grep,'-bcihlnvsy',file1,file2],Y). 
-cmd_grep([grep|T],Z):-
-	divide_dashed(T,[Z1H|Z1T],[Z2|Z3]),length([Z1H|Z1T],Y),Y == 2,sub_element_cat([Z1H],[Z4]),removehead(Z4,Z5),
-	sub_member_grep(Z5,Z6),name(Z7,Z6),
-	Z = search_expr(Z7,Z1T,Z2,Z3).
+% Grep predicate gets the output in the require format. It expects input with arity 5
+% cmd_grep(['-bcihlnvsy','-e',expe,file1,file2],Y).
+cmd_grep(X,A):-cmd_grep(X, A1, Z, M, F),A=search_exp(A1,Z,M,F).
 
-cmd_grep([grep|T],Z):-
-	divide_dashed(T,[Z1H|Z1T],[Z2|Z3]),length([Z1H|Z1T],Y),Y == 1,sub_element_cat([Z1H|Z1T],[Z4]),
-	removehead(Z4,Z5),sub_member_grep(Z5,Z6),name(Z7,Z6),
-	Z = search_expr(Z7,[],[],[Z2|Z3] ).
+% Predicate to check if if '-e' is porvied 
+cmd_grep(['-e'|T],R1,['e'],R3,R):-
+    !,
+    cmd_grep(T,R1,_,R3,R).
 
-removehead([_|Tail], Tail).
+% Predicate to check if the argument is compliant
+cmd_grep([H|T],T2,R2,R3,R):-
+    atom_chars(H,['-'|T1]),
+    !,
+    ismember(T1,T2),
+    cmd_grep(T,_,R2,R3,R).
 
-sub_member_grep([],[]).
-sub_member_grep(X,[H|Y]):-
-	X = [H|T],
-	member(H,[98,99,105,104,108,110,118,115,121]),
-	sub_member_grep(T,Y).
+% Predicate to make sure that there is more than
+cmd_grep([H|T],[],[],H,T):-
+    not(T = []),!.
 
+% List of arguments that need to beck checked for this predicate
+ismember([],[]).
+ismember([H|T],[H|R]):-
+    member(H,[b,c,i,h,l,n,v,s,y]),
+    ismember(T,R).
 % ======================================= %
 
+% Reading the characters and based on '>' or '>>' return the output required else return the ascii code
 read_dcg(R):-
-	get0(Input),
-	read_dcg(C,Input),
-	phrase(default(M),C),
+	get0(Z),
+	read_dcg(C,Z),
+	phrase(send_append(M),C),
 	R =..M.
 
-read_dcg([],Input):-
-	member(Input,`\n\t`),
+read_dcg([],Z):-
+	member(Z,`\n\t`),
 	!.
-read_dcg([In|L],In):-
-	get0(In2),
-	read_dcg(L,In2).
+read_dcg([I|L],I):-
+	get0(I2),
+	read_dcg(L,I2).
 
+
+% Decied if its a send or append or use defaults
+% atom_codes('abc',Y),phrase(send_append(X),Y).
+send_append([append,R,Y1]) --> default(X) ,` >>`,file(Y),{atom_codes(Y1,Y)},{R=..X}.
+send_append([send,R,Y1]) --> default(X) ,` >`,file(Y),{atom_codes(Y1,Y)},{R =..X}.
+send_append(X) --> default(X).
+
+% based on head of the list decide on the type of operation to preform
 % atom_codes('cat -nb file1 file2',Y),phrase(default(X),Y).
-% phrase(default(X),[99,97,108]).
-default([calendar|Args]) --> `cal`, cal(Args),! .
-default([concatenate|Args]) --> `cat`, cat(Args), !.
-default([copy|Args]) --> `cp`, cp(Args), !.
-default([search_expr|Args]) --> `grep`, grep(Args), !.
+default([calendar|A]) --> `cal`, cal(A),! .
+default([concatenate|A]) --> `cat`, cat(A), !.
+default([copy|A]) --> `cp`, cp(A), !.
+default([search_expr|A]) --> `grep`, grep(A), !.
 % ======================================= %
+
+% Check for the correct range for the month and year if both inputs are provided
 % atom_codes('',X), phrase(cal(Y),X). 
-
-
 cal([M,Y]) --> ` `, integer(M),{between(1,12,M)}, ` `,integer(Y),{between(1,9999,Y)}.
 
+% Only if the year is provided return year after checking its range
 % atom_codes(' 1',X), phrase(cal(Y),X).
 cal([Y]) --> ` `, integer(Y),
 	{between(1,9999,Y)}.
 
+% Return the default year if no input is provided
 cal([M,Y]) --> [],{default_cal(M,Y)}.
 
+% Integer and Digit check
 integer(I) --> digit(D0), digits(D),
 	{number_codes(I,[D0|D])}.
 digits([D|L]) --> digit(D), !, digits(L).
 digits([]) --> [].
 digit(D) --> [D],
 	{code_type(D,digit)}.
-
 % ======================================= %
 
+% concatinate dcg checks for 
 % atom_codes('file1',X), phrase(cat(Y),X). 
 cat([C,Y]) --> ` -`,cat_args(C),files(Y).
 cat([[],Y]) --> files(Y).
@@ -183,14 +200,15 @@ options(v) --> `v`.
 options(e) --> `e`.
 options(t) --> `t`.
 
-% atom_codes(' file1 file2 file3',Y),phrase(files(M),Y).
+
 % After space file is a word follwed recursively.
 % AC contains the name of the file.
+% atom_codes(' file1 file2 file3',Y),phrase(files(M),Y).
 files([AC|FL]) --> ` `, file(F), files(FL),
 	{not(F =[]),
 	atom_codes(AC,F)}, !.
 
-% Base case when i have a single file
+% Base case single file
 files([AC]) --> ` `, file(F),
 	{not(F=[]),
 	atom_codes(AC,F)}.
@@ -201,11 +219,12 @@ file([F|L]) --> [F], file(L),
 file([]) --> [].
 % ======================================= %
 
-% atom_codes(' file1 file2 target',Y),phrase(cp(M,N),Y).
+% Copy DCG  checks for the arguments and files supplied
 % atom_codes(' -R -f -p file1 file2 target',Y),phrase(cp(M,N,Q),Y).
 cp([C,X,Y]) --> cp_args(C),cp_file(X,Y).
 cp([X,Y]) --> cp_file(X,Y).
 
+% optional dcg list to check for  -R -f -i
 % atom_codes(' -R -f -i',Y),phrase(cp_args(M),Y).
 cp_args([X|Y]) --> cp_options(X),cp_args(Y).
 cp_args([X]) --> cp_options(X).
@@ -228,6 +247,31 @@ cp_file([AC],AD) --> ` `,file(F),` `,file(Y),
 	atom_codes(AD,Y)}.
 
 % ======================================= %
-grep([[],[],[],X]) --> files(X).
 
+% Grep predicate checks for all conidtions and options + arguments
+grep([A,Z,Y,X]) --> ` -`,grep_options1(A),grep_options2(Z), expr(Y),files(X).
 
+% Check only for expression -e and files
+% atom_codes(' -e expr file1 file2 file3',Y),phrase(grep(M),Y).
+grep([[],Z,Y,X]) --> grep_options2(Z), expr(Y),files(X).
+
+% This predicate checks for expression and the files
+% atom_codes(' expr file1 file2 file3',Y),phrase(grep(M),Y).
+grep([[],[],Y,X]) --> expr(Y),files(X).
+expr(Y) --> ` `,file(Y1),{atom_codes(Y,Y1)}.
+
+% option to check -e
+grep_options2(e) --> ` -e`.
+
+% Options to check -bcihlnvsy
+grep_options1([X|Y]) --> options1(X),grep_options1(Y).
+grep_options1([X]) --> options1(X).
+options1(b) --> `b`.
+options1(c) --> `c`.
+options1(i) --> `i`.
+options1(h) --> `h`.
+options1(l) --> `l`.
+options1(n) --> `n`.
+options1(v) --> `v`.
+options1(s) --> `s`.
+options1(y) --> `y`.
