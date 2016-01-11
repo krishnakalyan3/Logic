@@ -1,5 +1,4 @@
-working_directory(_, 
-	'/Users/krishna/Dropbox/DMKM/Course/Logic and Knowledge Representation/Prolog_Code/Code').
+% Sai Krishna Kalyan : Prolog Assignment 3
 
 % Reading the characters and based on '>' or '>>' return the output required else return the ascii code
 read_command(L1):-             
@@ -149,7 +148,6 @@ read_dcg([],Z):-
 read_dcg([I|L],I):-
 	get0(I2),
 	read_dcg(L,I2).
-
 
 % Decied if its a send or append or use defaults
 % atom_codes('abc',Y),phrase(send_append(X),Y).
